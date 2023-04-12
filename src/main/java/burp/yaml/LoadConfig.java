@@ -1,19 +1,19 @@
 package burp.yaml;
 
 import burp.Config;
-import burp.yaml.template.*;
+import burp.yaml.template.Rule;
+import burp.yaml.template.Rules;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ArrayList;
-
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.representer.Representer;
-import org.yaml.snakeyaml.nodes.Tag;
 
 public class LoadConfig {
     private static final Yaml yaml = new Yaml();

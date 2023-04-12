@@ -1,7 +1,5 @@
 package burp.yaml.template;
 
-import burp.yaml.template.Rule;
-
 import java.util.List;
 
 /**

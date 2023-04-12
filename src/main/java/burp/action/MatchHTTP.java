@@ -1,9 +1,9 @@
 package burp.action;
 
+import burp.yaml.LoadConfig;
 import jregex.Matcher;
 import jregex.Pattern;
 import jregex.REFlags;
-import burp.yaml.LoadConfig;
 
 /**
  * @author EvilChen

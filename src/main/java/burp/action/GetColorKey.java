@@ -1,6 +1,7 @@
 package burp.action;
 
 import burp.Config;
+
 import java.util.ArrayList;
 import java.util.List;
 

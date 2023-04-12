@@ -3,11 +3,10 @@ package burp.ui;
 import burp.Config;
 import burp.yaml.LoadConfig;
 import burp.yaml.SetConfig;
-
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-import java.io.FileOutputStream;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -15,6 +14,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.FileOutputStream;
 import java.util.Map;
 
 /**

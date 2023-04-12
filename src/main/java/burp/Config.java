@@ -42,5 +42,5 @@ public class Config {
 
     public static Map<String,Object[][]> ruleConfig = null;
 
-    public static Map<String, Map<String, List<String>>> globalDataMap = new HashMap<>();
+    public static Map<String, Map<String, Map<String, List<String>>>> globalDataMap = new HashMap<>();  //host,url,regexName,result
 }

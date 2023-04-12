@@ -1,18 +1,20 @@
 package burp;
 
-import burp.action.*;
+import burp.action.GetColorKey;
+import burp.action.ProcessMessage;
+import burp.action.UpgradeColor;
 import burp.ui.MainUI;
-
-import java.util.Map;
-import java.util.Objects;
 import javax.swing.*;
-import java.awt.*;
-import java.nio.charset.StandardCharsets;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author EvilChen & 0chencc
@@ -88,7 +90,11 @@ public class BurpExtender implements IBurpExtender, IHttpListener, IMessageEdito
 
             String c = new String(content, StandardCharsets.UTF_8).intern();
 
-            List<Map<String, String>> result = pm.processMessageByContent(helpers, content, messageIsRequest, true, host);
+            IHttpRequestResponsePersisted message = callbacks.saveBuffersToTempFiles(messageInfo);
+            IRequestInfo requestInfo = helpers.analyzeRequest(message);
+            URL url = requestInfo.getUrl();
+
+            List<Map<String, String>> result = pm.processMessageByContent(helpers, content, messageIsRequest, true, host,url);
             if (result != null && !result.isEmpty() && result.size() > 0) {
                 String originalColor = messageInfo.getHighlight();
                 String originalComment = messageInfo.getComment();
@@ -142,7 +148,7 @@ public class BurpExtender implements IBurpExtender, IHttpListener, IMessageEdito
         @Override
         public boolean isEnabled(byte[] content, boolean isRequest) {
             String c = new String(content, StandardCharsets.UTF_8).intern();
-            List<Map<String, String>> result = pm.processMessageByContent(helpers, content, isRequest, false, "");
+            List<Map<String, String>> result = pm.processMessageByContent(helpers, content, isRequest, false, "",null);
 
             if (result != null && !result.isEmpty()) {
                 Map<String, String> dataMap = result.get(0);
@@ -207,7 +213,7 @@ public class BurpExtender implements IBurpExtender, IHttpListener, IMessageEdito
                 Object[][] data = new Object[extractData.length][1];
                 for (int x = 0; x < extractData.length; x++) {
                     data[x][0] = extractData[x];
-                    // stdout.println(extractData[x]);
+//                     stdout.println(extractData[x]);
                 }
                 JScrollPane jScrollPane = new JScrollPane(new JTable(data, new Object[]{"Information"}));
                 lTitleList.add(i);

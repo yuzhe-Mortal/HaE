@@ -1,12 +1,9 @@
 package burp.action;
 
-import burp.BurpExtender;
 import burp.IExtensionHelpers;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.net.URL;
+import java.util.*;
 
 public class ProcessMessage {
     MatchHTTP mh = new MatchHTTP();
@@ -15,7 +12,7 @@ public class ProcessMessage {
     GetColorKey gck = new GetColorKey();
     UpgradeColor uc = new UpgradeColor();
 
-    public List<Map<String, String>> processMessageByContent(IExtensionHelpers helpers, byte[] content, boolean isRequest, boolean messageInfo, String host) {
+    public List<Map<String, String>> processMessageByContent(IExtensionHelpers helpers, byte[] content, boolean isRequest, boolean messageInfo, String host, URL url) {
         List<Map<String, String>> result = new ArrayList<>();;
         Map<String, Map<String, Object>> obj;
 
@@ -43,7 +40,7 @@ public class ProcessMessage {
             int requestBodyOffset = helpers.analyzeRequest(content).getBodyOffset();
             byte[] requestBody = Arrays.copyOfRange(content, requestBodyOffset, content.length);
 
-            obj = ec.matchRegex(content, requestHeaders, requestBody, "request", host);
+            obj = ec.matchRegex(content, requestHeaders, requestBody, "request", host,url);
         } else {
             try {
                 // 流量清洗
@@ -64,7 +61,7 @@ public class ProcessMessage {
             int responseBodyOffset = helpers.analyzeResponse(content).getBodyOffset();
             byte[] responseBody = Arrays.copyOfRange(content, responseBodyOffset, content.length);
 
-            obj = ec.matchRegex(content, responseHeaders, responseBody, "response", host);
+            obj = ec.matchRegex(content, responseHeaders, responseBody, "response", host,url);
         }
 
         if (obj.size() > 0) {

@@ -1,19 +1,21 @@
 package burp.ui;
 
 import burp.Config;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import javax.swing.table.DefaultTableModel;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.Map;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.List;
+import java.util.*;
+
+import static burp.BurpExtender.stdout;
 
 /**
  * @author LinChen && EvilChen
@@ -33,7 +35,7 @@ public class Databoard extends JPanel {
         // 判断通配符Host/单一Host
         String host = hostTextField.getText();
         if(host.contains("*")){
-            Map<String, Map<String, List<String>>> ruleMap = Config.globalDataMap;
+            Map<String, Map<String,  Map<String, List<String>>>> ruleMap = Config.globalDataMap;
             Map<String, List<String>> selectHost = new HashMap<>();
             ruleMap.keySet().forEach(i -> {
                 if (i.contains(host.replace("*.", ""))) {
@@ -189,28 +191,32 @@ public class Databoard extends JPanel {
 
     private static void getInfoByHost(@NotNull JComboBox hostComboBox, JTabbedPane tabbedPane, JTextField textField) {
         if (hostComboBox.getSelectedItem() != null) {
-            Map<String, Map<String, List<String>>> ruleMap = Config.globalDataMap;
-            Map<String, List<String>> selectHost = new HashMap<>();
+            Map<String, Map<String,  Map<String, List<String>>>> ruleMap = Config.globalDataMap;
+            Map<String, Map<String, List<String>>> selectHost = new HashMap<>();
             String host = hostComboBox.getSelectedItem().toString();
             if (host.contains("*")) {
                 // 通配符数据
-                Map<String, List<String>> finalSelectHost = selectHost;
-                ruleMap.keySet().forEach(i -> {
+                Map<String, Map<String, List<String>>> finalSelectHost = selectHost;
+                ruleMap.keySet().forEach(i -> {  //i=host,a=url,e=regex
                     if (i.contains(host.replace("*.", ""))) {
-                        ruleMap.get(i).keySet().forEach(e -> {
-                            if (finalSelectHost.containsKey(e)) {
+                        ruleMap.get(i).keySet().forEach(a -> {
+                            ruleMap.get(i).get(a).keySet().forEach(e -> {
+                            if (finalSelectHost.containsKey(a) && finalSelectHost.get(a).containsKey(e)) {
                                 // 合并操作
-                                List<String> newList = new ArrayList<>(finalSelectHost.get(e));
-                                newList.addAll(ruleMap.get(i).get(e));
+                                List<String> newList = new ArrayList<>(finalSelectHost.get(a).get(e));
+                                newList.addAll(ruleMap.get(i).get(a).get(e));
                                 // 去重操作
                                 HashSet tmpList = new HashSet(newList);
                                 newList.clear();
                                 newList.addAll(tmpList);
                                 // 添加操作
-                                finalSelectHost.put(e, newList);
+                                Map<String,List<String>> t=finalSelectHost.get(a);
+                                t.put(e,newList);
+                                finalSelectHost.put(a, t);
                             } else {
-                                finalSelectHost.put(e, ruleMap.get(i).get(e));
+                                finalSelectHost.put(a, ruleMap.get(i).get(a));
                             }
+                            });
                         });
                     }
                 });
@@ -219,9 +225,34 @@ public class Databoard extends JPanel {
             }
 
             tabbedPane.removeAll();
-            for(Map.Entry<String, List<String>> entry: selectHost.entrySet()){
-                tabbedPane.addTab(entry.getKey(), new JScrollPane(new HitRuleDataList(entry.getValue())));
-            }
+
+                for(Map.Entry<String, Map<String, List<String>>> entry1: selectHost.entrySet()){
+                    for(Map.Entry<String,  List<String>> entry: entry1.getValue().entrySet()){
+                        String tabName = entry.getKey();
+                        int index = tabbedPane.indexOfTab(tabName);
+                        try {
+                            // 如果已经存在，就替换原有的组件
+                            if (index >= 0) {
+                                Component comp = tabbedPane.getComponentAt(index);
+                                Component view = ((JScrollPane) comp).getViewport().getView();
+                                JTable table = (JTable) view;
+                                DefaultTableModel model = (DefaultTableModel) table.getModel();
+                                Object[] row = new Object[2];
+                                for (String s : entry.getValue()) {
+                                    row[0] = s;
+                                    row[1] = entry1.getKey();
+                                    model.addRow(row);
+                                }
+                            } else {
+                                tabbedPane.addTab(entry.getKey(), new JScrollPane(new HitRuleDataList(entry.getValue(), entry1.getKey())));
+                            }
+                        }finally{
+                            continue;
+                        }}
+                }
+
+
+
             textField.setText(hostComboBox.getSelectedItem().toString());
         }
     }
@@ -236,14 +267,31 @@ public class Databoard extends JPanel {
     // 是否自动匹配Host
     private static Boolean isMatchHost = false;
 }
+
 class HitRuleDataList extends JTable {
-    public HitRuleDataList(List<String> list){
+    public HitRuleDataList(List<String> list,String test){
         DefaultTableModel model = new DefaultTableModel();
-        Object[][] data = new Object[list.size()][1];
+        Object[][] data = new Object[list.size()][2];
         for (int x = 0; x < list.size(); x++) {
             data[x][0] = list.get(x);
+            data[x][1] = test; // 添加 URL 字段
         }
-        model.setDataVector(data, new Object[]{"Information"});
+        model.setDataVector(data, new Object[]{"Information","URl"});
+
         this.setModel(model);
+        sortByUrl(); // 新增：按照 URL 字段排序
     }
+    public void sortByUrl() {
+        DefaultTableModel model = (DefaultTableModel) getModel();
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+        // 按照 URL 字段升序排列
+        sorter.setComparator(1, (o1, o2) -> {
+            String s1 = (String) o1;
+            String s2 = (String) o2;
+            return s1.compareTo(s2);
+        });
+        setRowSorter(sorter);
+    }
+
+
 }

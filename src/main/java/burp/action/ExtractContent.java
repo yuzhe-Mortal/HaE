@@ -1,8 +1,5 @@
 package burp.action;
 
-import burp.BurpExtender;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
 import burp.Config;
 import dk.brics.automaton.Automaton;
 import dk.brics.automaton.AutomatonMatcher;
@@ -11,13 +8,19 @@ import dk.brics.automaton.RunAutomaton;
 import jregex.Matcher;
 import jregex.Pattern;
 
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+
+import static burp.BurpExtender.stdout;
+
 /**
  * @author EvilChen
  */
 
 public class ExtractContent {
 
-    public Map<String, Map<String, Object>> matchRegex(byte[] content, String headers, byte[] body, String scopeString, String host) {
+    public Map<String, Map<String, Object>> matchRegex(byte[] content, String headers, byte[] body, String scopeString, String host, URL url) {
         Map<String, Map<String, Object>> map = new HashMap<>(); // 最终返回的结果
         Config.ruleConfig.keySet().forEach(i -> {
             for (Object[] objects : Config.ruleConfig.get(i)) {
@@ -98,11 +101,27 @@ public class ExtractContent {
                             if (!host.isEmpty()) {
                                 String anyHost = host.replace(host.split("\\.")[0], "*");
                                 List<String> dataList = Arrays.asList(dataStr.split("\n"));
+                                //获取url
+                                String urlWithoutParams = url.getProtocol() + "://" + url.getHost();
+                                int port = url.getPort();
+                                if (port != -1) {
+                                    urlWithoutParams += ":" + port;
+                                }
+                                urlWithoutParams += url.getPath();
+
                                 if (Config.globalDataMap.containsKey(host)) {
-                                    Map<String, List<String>> gRuleMap = Config.globalDataMap.get(host);
-                                    // 判断匹配规则是否存在（逻辑同Host判断）
-                                    if (gRuleMap.containsKey(name)) {
-                                        List<String> gDataList = gRuleMap.get(name);
+                                    if(!Config.globalDataMap.get(host).containsKey(urlWithoutParams)){
+                                        Map<String,Map<String, List<String>>> gRuleMap = Config.globalDataMap.get(host);
+                                        Map<String, List<String>> ruleMap1 = new HashMap<>();
+                                        ruleMap1.put(name,dataList);
+                                        gRuleMap.put(urlWithoutParams,ruleMap1);
+                                    }
+                                    else {
+                                        Map<String, List<String>> ruleMap1 = Config.globalDataMap.get(host).get(urlWithoutParams);
+
+                                        if (ruleMap1.containsKey(name)) {
+
+                                        List<String> gDataList = ruleMap1.get(name);
                                         List<String> mergeDataList = new ArrayList<>(gDataList);
                                         // 合并两个List
                                         mergeDataList.addAll(dataList);
@@ -111,16 +130,31 @@ public class ExtractContent {
                                         mergeDataList.clear();
                                         mergeDataList.addAll(tmpList);
                                         // 替换操作
-                                        gRuleMap.replace(name, gDataList, mergeDataList);
+                                            ruleMap1.replace(name, gDataList, mergeDataList);
                                     } else {
-                                        gRuleMap.put(name, dataList);
+
+                                            ruleMap1.put(name, dataList);
+
                                     }
+                                    }
+
+
                                 } else if (!Config.globalDataMap.containsKey(anyHost)) {
                                     // 添加通配符Host
                                     Config.globalDataMap.put(anyHost, new HashMap<>());
+                                    Map<String, List<String>> ruleMap1 = new HashMap<>();
+                                    ruleMap1.put(name, dataList);
+
+                                    Map<String, Map<String, List<String>>> ruleMap = new HashMap<>();
+                                    ruleMap.put(urlWithoutParams, ruleMap1);
+                                    // 添加单一Host
+                                    Config.globalDataMap.put(host, ruleMap);
                                 } else {
-                                    Map<String, List<String>> ruleMap = new HashMap<>();
-                                    ruleMap.put(name, dataList);
+                                    Map<String, List<String>> ruleMap1 = new HashMap<>();
+                                    ruleMap1.put(name, dataList);
+
+                                    Map<String, Map<String, List<String>>> ruleMap = new HashMap<>();
+                                    ruleMap.put(urlWithoutParams, ruleMap1);
                                     // 添加单一Host
                                     Config.globalDataMap.put(host, ruleMap);
                                 }
