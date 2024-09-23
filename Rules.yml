@@ -1,0 +1,585 @@
+rules:
+- group: vuln
+  rule:
+  - name: swagger
+    loaded: true
+    f_regex: (swagger)
+    s_regex: ''
+    format: '{0}'
+    color: red
+    scope: any
+    engine: nfa
+    sensitive: true
+  - name: Shiro
+    loaded: true
+    f_regex: (=deleteMe|rememberMe=)
+    s_regex: ''
+    format: '{0}'
+    color: red
+    scope: any
+    engine: nfa
+    sensitive: true
+  - name: 'Fingerprint: ThinkPHP'
+    loaded: true
+    f_regex: (X-Powered-By:\sThinkPHP)
+    s_regex: ''
+    format: '{0}'
+    color: yellow
+    scope: any
+    engine: nfa
+    sensitive: true
+  - name: Chinese IDCard
+    loaded: true
+    f_regex: ([^0-9\.]((\d{8}(0\d|10|11|12)([0-2]\d|30|31)\d{3}$)|(\d{6}(18|19|20)\d{2}(0[1-9]|10|11|12)([0-2]\d|30|31)\d{3}(\d|X|x)))[^0-9])
+    s_regex: ''
+    format: '{0}'
+    color: yellow
+    scope: any
+    engine: nfa
+    sensitive: true
+  - name: editor
+    loaded: true
+    f_regex: (?i)(ckfinder|(ueditor\.(config|all)\.js))
+    s_regex: ''
+    format: '{0}'
+    color: red
+    scope: any
+    engine: nfa
+    sensitive: false
+  - name: Alibaba OSS key
+    loaded: true
+    f_regex: (accesskeysecret|"(Secret)?AccessKey"|secretKey)
+    s_regex: ''
+    format: '{0}'
+    color: red
+    scope: any
+    engine: nfa
+    sensitive: false
+  - name: RCE Paramters
+    loaded: true
+    f_regex: (\b(cmd|exec|command|execute|ping|query|jump|reg|do|func|arg|option|load|process|step|read|function|feature|exe|module|payload|run|daemon|upload|dir|download|log|ip|cli)[=:])
+    s_regex: ''
+    format: '{0}'
+    color: yellow
+    scope: request body
+    engine: nfa
+    sensitive: true
+  - name: oss
+    loaded: true
+    f_regex: (The specified bucket is not valid)
+    s_regex: ''
+    format: '{0}'
+    color: red
+    scope: response
+    engine: nfa
+    sensitive: false
+  - name: dirinfo
+    loaded: true
+    f_regex: (<title>Index\sof\s\/)
+    s_regex: ''
+    format: '{0}'
+    color: red
+    scope: response
+    engine: nfa
+    sensitive: false
+  - name: log4j框架
+    loaded: true
+    f_regex: (log4j)
+    s_regex: ''
+    format: '{0}'
+    color: red
+    scope: response
+    engine: nfa
+    sensitive: false
+  - name: RCE Paramters
+    loaded: true
+    f_regex: ((cmd=)|(exec=)|(command=)|(execute=)|(ping=)|(query=)|(jump=)|(reg=)|(do=)|(func=)|(arg=)|(option=)|(load=)|(process=)|(step=)|(read=)|(function=)|(feature=)|(exe=)|(module=)|(payload=)|(run=)|(daemon=)|(upload=)|(dir=)|(download=)|(log=)|(ip=)|(cli=))
+    s_regex: ''
+    format: '{0}'
+    color: cyan
+    scope: request body
+    engine: dfa
+    sensitive: true
+  - name: Java Deserialization
+    loaded: true
+    f_regex: (javax\.faces\.ViewState)
+    s_regex: ''
+    format: '{0}'
+    color: red
+    scope: any
+    engine: dfa
+    sensitive: true
+  - name: Debug Logic Parameters
+    loaded: true
+    f_regex: \b((access=)|(adm=)|(admin=)|(alter=)|(cfg=)|(clone=)|(config=)|(create=)|(dbg=)|(debug=)|(delete=)|(disable=)|(edit=)|(enable=)|(exec=)|(execute=)|(grant=)|(load=)|(make=)|(modify=)|(rename=)|(reset=)|(root=)|(shell=)|(test=)|(toggl=))
+    s_regex: ''
+    format: '{0}'
+    color: cyan
+    scope: request
+    engine: dfa
+    sensitive: true
+  - name: ssrf
+    loaded: true
+    f_regex: (=(https?://.*|https?%3(a|A)%2(f|F)%2(f|F).*))
+    s_regex: ''
+    format: '{0}'
+    color: yellow
+    scope: request body
+    engine: nfa
+    sensitive: true
+  - name: Upload Form
+    loaded: true
+    f_regex: (type=\"file\")
+    s_regex: ''
+    format: '{0}'
+    color: yellow
+    scope: response body
+    engine: dfa
+    sensitive: true
+  - name: 快手get请求
+    loaded: true
+    f_regex: get\(\"(/[^"]+?)\"
+    s_regex: ''
+    format: '{0}'
+    color: yellow
+    scope: response body
+    engine: nfa
+    sensitive: false
+  - name: java反序列化前缀
+    loaded: true
+    f_regex: (rO0ABX)
+    s_regex: ''
+    format: '{0}'
+    color: gray
+    scope: response body
+    engine: nfa
+    sensitive: false
+  - name: order by
+    loaded: true
+    f_regex: ((order.?by\w*|sort\w*|sidx)((=)|(":)))
+    s_regex: ''
+    format: '{0}'
+    color: red
+    scope: request
+    engine: nfa
+    sensitive: false
+  - name: 排序
+    loaded: true
+    f_regex: ((=|":")(asc|desc))
+    s_regex: ''
+    format: '{0}'
+    color: red
+    scope: request
+    engine: nfa
+    sensitive: false
+  - name: orderField
+    loaded: true
+    f_regex: (("order.?Field")|(order.?Field=))
+    s_regex: ''
+    format: '{0}'
+    color: red
+    scope: request
+    engine: nfa
+    sensitive: false
+  - name: sql-where
+    loaded: true
+    f_regex: ("children":\[)
+    s_regex: ''
+    format: '{0}'
+    color: yellow
+    scope: request body
+    engine: nfa
+    sensitive: true
+  - name: OSS keyid
+    loaded: true
+    f_regex: (accesskeyid)
+    s_regex: ''
+    format: '{0}'
+    color: green
+    scope: any
+    engine: nfa
+    sensitive: false
+  - name: id
+    loaded: true
+    f_regex: '"source_system_name":"(.*?)"'
+    s_regex: ''
+    format: '{0}'
+    color: red
+    scope: response body
+    engine: nfa
+    sensitive: true
+  - name: accessSecret
+    loaded: true
+    f_regex: (accessSecret)
+    s_regex: ''
+    format: '{0}'
+    color: red
+    scope: any
+    engine: nfa
+    sensitive: true
+  - name: XXE
+    loaded: true
+    f_regex: ((<\?xml)|(<\!ENTITY)|(<\!DOCTYPE)|(<\!\[CDATA))
+    s_regex: ''
+    format: '{0}'
+    color: red
+    scope: request body
+    engine: nfa
+    sensitive: false
+  - name: sql语句泄露
+    loaded: true
+    f_regex: (\bselect\b.*\bfrom\b.*?\bwhere\b)
+    s_regex: ''
+    format: '{0}'
+    color: red
+    scope: response body
+    engine: nfa
+    sensitive: false
+  - name: 快手url2
+    loaded: true
+    f_regex: path:\"(/[^\"\:\*\?]+?)\"
+    s_regex: ''
+    format: '{0}'
+    color: yellow
+    scope: response body
+    engine: nfa
+    sensitive: true
+  - name: 我的用户id
+    loaded: false
+    f_regex: (3731951890|843205403|4503617)
+    s_regex: ''
+    format: '{0}'
+    color: blue
+    scope: request
+    engine: nfa
+    sensitive: true
+  - name: sql查询
+    loaded: true
+    f_regex: (\bselect\b)
+    s_regex: ''
+    format: '{0}'
+    color: red
+    scope: request body
+    engine: nfa
+    sensitive: false
+  - name: 快手url
+    loaded: true
+    f_regex: url:\"(/[^\"\:\*\?]+?)\"
+    s_regex: ''
+    format: '{0}'
+    color: yellow
+    scope: response body
+    engine: nfa
+    sensitive: true
+  - name: 快手post请求
+    loaded: true
+    f_regex: post\(\"(/[^"]+?)\"
+    s_regex: ''
+    format: '{0}'
+    color: yellow
+    scope: response body
+    engine: nfa
+    sensitive: true
+  - name: 快手url3
+    loaded: true
+    f_regex: \"(/rest/.*?)\"
+    s_regex: ''
+    format: '{0}'
+    color: yellow
+    scope: response body
+    engine: nfa
+    sensitive: true
+  - name: 我的BitgetId
+    loaded: true
+    f_regex: (5694001990)
+    s_regex: ''
+    format: '{0}'
+    color: green
+    scope: any
+    engine: nfa
+    sensitive: true
+- group: Sensitive Information
+  rule:
+  - name: Amazon AWS URL
+    loaded: true
+    f_regex: (((([a-zA-Z0-9._-]+\.s3|s3)(\.|\-)+[a-zA-Z0-9._-]+|[a-zA-Z0-9._-]+\.s3|s3)\.amazonaws\.com)|(s3:\/\/[a-zA-Z0-9-\.\_]+)|(s3.console.aws.amazon.com\/s3\/buckets\/[a-zA-Z0-9-\.\_]+)|(amzn\.mws\.[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})|(ec2-[0-9-]+.cd-[a-z0-9-]+.compute.amazonaws.com)|(us[_-]?east[_-]?1[_-]?elb[_-]?amazonaws[_-]?com))
+    s_regex: ''
+    format: '{0}'
+    color: green
+    scope: response body
+    engine: nfa
+    sensitive: true
+  - name: Amazon AWS AccessKey ID
+    loaded: true
+    f_regex: '[^0-9]((aws(.{0,20})?(?-i)[''\"][0-9a-zA-Z\/+]{40}[''\"])|((A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[a-zA-Z0-9]{16}))[^0-9a-zA-z]'
+    s_regex: ''
+    format: '{0}'
+    color: green
+    scope: response body
+    engine: nfa
+    sensitive: true
+  - name: cloud
+    loaded: true
+    f_regex: ((http.*?)?(us(-gov)?|ap|ca|cn|eu|sa)-(central|(north|south)?(east|west)?)-\d.*?\.(com|cn))
+    s_regex: ''
+    format: '{0}'
+    color: green
+    scope: response body
+    engine: nfa
+    sensitive: true
+  - name: SSH Private Key
+    loaded: true
+    f_regex: ([-]+BEGIN [^\s]+ PRIVATE KEY[-])
+    s_regex: ''
+    format: '{0}'
+    color: blue
+    scope: response body
+    engine: nfa
+    sensitive: true
+  - name: Username Field
+    loaded: true
+    f_regex: ((|'|")([u](ser|name|ame|sername))(|'|")(:|=)( |)('|")(.*?)('|")(|,))
+    s_regex: ''
+    format: '{0}'
+    color: green
+    scope: response body
+    engine: nfa
+    sensitive: false
+  - name: WeCom Key
+    loaded: true
+    f_regex: ([c|C]or[p|P]id|[c|C]orp[s|S]ecret)
+    s_regex: ''
+    format: '{0}'
+    color: green
+    scope: response body
+    engine: dfa
+    sensitive: true
+  - name: JDBC Connection
+    loaded: true
+    f_regex: (jdbc:[a-z:]+://[a-z0-9\.\-_:;=/@?,&]+)
+    s_regex: ''
+    format: '{0}'
+    color: yellow
+    scope: any
+    engine: nfa
+    sensitive: false
+  - name: Authorization Header
+    loaded: true
+    f_regex: ((basic [a-z0-9=:_\+\/-]{5,100})|(bearer [a-z0-9_.=:_\+\/-]{5,100}))
+    s_regex: ''
+    format: '{0}'
+    color: yellow
+    scope: response body
+    engine: nfa
+    sensitive: false
+  - name: Github Access Token
+    loaded: true
+    f_regex: ([a-z0-9_-]*:[a-z0-9_\-]+@github\.com*)
+    s_regex: ''
+    format: '{0}'
+    color: green
+    scope: response body
+    engine: nfa
+    sensitive: false
+  - name: Microsoft Teams Webhook
+    loaded: true
+    f_regex: (https://outlook\.office\.com/webhook/[a-z0-9@-]+/IncomingWebhook/[a-z0-9-]+/[a-z0-9-]+)
+    s_regex: ''
+    format: '{0}'
+    color: cyan
+    scope: response body
+    engine: nfa
+    sensitive: false
+  - name: Zoho Webhook
+    loaded: true
+    f_regex: (https://creator\.zoho\.com/api/[a-z0-9/_.-]+\?authtoken=[a-z0-9]+)
+    s_regex: ''
+    format: '{0}'
+    color: cyan
+    scope: response body
+    engine: nfa
+    sensitive: false
+  - name: Sonarqube Token
+    loaded: true
+    f_regex: (sonar.{0,50}(?:"|\'|`)?[0-9a-f]{40}(?:"|\'|`)?)
+    s_regex: ''
+    format: '{0}'
+    color: cyan
+    scope: response body
+    engine: nfa
+    sensitive: false
+  - name: dingtalk robot
+    loaded: true
+    f_regex: (oapi\.dingtalk\.com\/robot\/send\?access_token=.*)
+    s_regex: ''
+    format: '{0}'
+    color: red
+    scope: response body
+    engine: nfa
+    sensitive: true
+  - name: 字节accesskeyID
+    loaded: true
+    f_regex: (\bAK\w{45}\b)
+    s_regex: ''
+    format: '{0}'
+    color: red
+    scope: response body
+    engine: nfa
+    sensitive: true
+  - name: 数据库账号泄露
+    loaded: true
+    f_regex: ((mysql|postgresql|sqlite|oracle|sqlserver):\/\/([^:]+):([^@]+)@([^:\/]+):(\d+))
+    s_regex: ''
+    format: '{0}'
+    color: red
+    scope: any
+    engine: nfa
+    sensitive: false
+  - name: 数字
+    loaded: true
+    f_regex: \b(?<!\d)(?<!-)(?!\d{13})(\d{4,})\b
+    s_regex: ''
+    format: '{0}'
+    color: green
+    scope: request body
+    engine: nfa
+    sensitive: true
+  - name: cookie赋权
+    loaded: false
+    f_regex: Set-Cookie:\s*(.{5}.*?);
+    s_regex: (.*)
+    format: '{0}'
+    color: orange
+    scope: response header
+    engine: nfa
+    sensitive: true
+- group: suspicious
+  rule:
+  - name: password
+    loaded: true
+    f_regex: ((pwd|password)"?((\s?:"[0-9a-zA-Z]+")|(\s?=[0-9a-zA-Z_]{6,})))
+    s_regex: ''
+    format: '{0}'
+    color: blue
+    scope: any
+    engine: nfa
+    sensitive: false
+  - name: md5
+    loaded: true
+    f_regex: (?i)((md5=\w{16,32})|(md5:"\w{16,32}"))
+    s_regex: ''
+    format: '{0}'
+    color: blue
+    scope: response
+    engine: nfa
+    sensitive: false
+- group: info
+  rule:
+  - name: IIS
+    loaded: true
+    f_regex: ((MICROSOFT-IIS/)(5|6|7))
+    s_regex: ''
+    format: '{0}'
+    color: yellow
+    scope: request body
+    engine: nfa
+    sensitive: true
+  - name: Chinese Mobile Number
+    loaded: true
+    f_regex: ^(1[39][0-9]|14[5|7]|15[0|1|2|3|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\d{8}$
+    s_regex: ''
+    format: '{0}'
+    color: pink
+    scope: response body
+    engine: nfa
+    sensitive: false
+  - name: Internal IP Address
+    loaded: true
+    f_regex: '[^0-9]((127\.0\.0\.1)|(10\.\d{1,3}\.\d{1,3}\.\d{1,3})|(172\.((1[6-9])|(2\d)|(3[01]))\.\d{1,3}\.\d{1,3})|(192\.168\.\d{1,3}\.\d{1,3}))'
+    s_regex: ''
+    format: '{0}'
+    color: yellow
+    scope: request body
+    engine: nfa
+    sensitive: true
+  - name: token
+    loaded: true
+    f_regex: Token\\?":\\?"([^"]+?)\\?"
+    s_regex: ''
+    format: '{0}'
+    color: gray
+    scope: response body
+    engine: nfa
+    sensitive: false
+  - name: 手机号
+    loaded: true
+    f_regex: '[^\w]((?:(?:\+|00)86)?1(?:(?:3[\d])|(?:4[5-79])|(?:5[0-35-9])|(?:6[5-7])|(?:7[0-8])|(?:8[\d])|(?:9[189]))\d{8})[^\w]'
+    s_regex: ''
+    format: '{0}'
+    color: green
+    scope: response body
+    engine: nfa
+    sensitive: true
+  - name: ImageMagick
+    loaded: true
+    f_regex: (%tEXtdate:creat)
+    s_regex: ''
+    format: '{0}'
+    color: red
+    scope: response body
+    engine: nfa
+    sensitive: true
+  - name: wsdl-xxe
+    loaded: true
+    f_regex: (\bwsdl\b)
+    s_regex: ''
+    format: '{0}'
+    color: red
+    scope: any
+    engine: nfa
+    sensitive: true
+  - name: 重置访问令牌
+    loaded: true
+    f_regex: (Access-Reset-Ticket.*)
+    s_regex: ''
+    format: '{0}'
+    color: red
+    scope: response header
+    engine: nfa
+    sensitive: false
+  - name: 手机号
+    loaded: true
+    f_regex: '":(1[3-9]\d{9})\b'
+    s_regex: ''
+    format: '{0}'
+    color: green
+    scope: response body
+    engine: nfa
+    sensitive: true
+  - name: xml
+    loaded: true
+    f_regex: ((text/xml)|(application/xml))
+    s_regex: ''
+    format: '{0}'
+    color: gray
+    scope: response header
+    engine: nfa
+    sensitive: false
+  - name: wkhtmltopdf
+    loaded: true
+    f_regex: (wkhtmltopdf)
+    s_regex: ''
+    format: '{0}'
+    color: red
+    scope: response body
+    engine: nfa
+    sensitive: true
+  - name: url中的id
+    loaded: true
+    f_regex: '[=/](?<!\d)(?<!-)(?!\d{13})(\d{2,})\b'
+    s_regex: ''
+    format: '{0}'
+    color: red
+    scope: request line
+    engine: nfa
+    sensitive: true
